@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Что споём?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fde4ec;
+    --bg-2: #f9d3e1;
+    --card: #ffffff;
+    --text: #4a2a3a;
+    --muted: #a07a8c;
+    --pink: #f7a1c4;
+    --pink-deep: #e8578a;
+    --lilac: #c9a7f0;
+    --line: #f3d3df;
+    --chip: #fff4f8;
+    --grad: linear-gradient(90deg, #f7a1c4 0%, #e8578a 100%);
+    --shadow: 0 10px 30px rgba(232, 87, 138, .15);
+    --radius: 24px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #2a1822; --bg-2: #331d2a; --card: #3a2231; --text: #fde9f1;
+      --muted: #c99bb0; --line: #533346; --chip: #452839;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #2a1822; --bg-2: #331d2a; --card: #3a2231; --text: #fde9f1;
+    --muted: #c99bb0; --line: #533346; --chip: #452839;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Nunito", system-ui, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(120px 60px at 10% 6%, rgba(255,255,255,.7), transparent 70%),
+      radial-gradient(160px 70px at 90% 14%, rgba(255,255,255,.6), transparent 70%),
+      radial-gradient(200px 90px at 15% 96%, rgba(255,255,255,.7), transparent 70%),
+      radial-gradient(220px 90px at 85% 100%, rgba(255,255,255,.6), transparent 70%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 28px 16px 48px; }
+
+  h1 {
+    font-size: 40px; font-weight: 900; text-align: center; margin: 8px 0 4px;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { text-align: center; color: var(--muted); margin: 0 0 22px; font-weight: 600; }
+
+  .card {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 20px 18px;
+  }
+  .field + .field { margin-top: 20px; }
+  .label { font-weight: 800; font-size: 15px; margin: 0 0 10px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font: inherit; font-weight: 700; font-size: 15px; color: var(--text);
+    background: var(--chip); border: 2px solid var(--line); border-radius: 999px;
+    padding: 10px 14px; min-height: 44px; cursor: pointer; transition: .15s;
+  }
+  .chip[aria-pressed="true"] { background: var(--grad); color: #fff; border-color: transparent; }
+
+  .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--chip); border: 2px solid var(--line); border-radius: 999px; padding: 4px; }
+  .seg button {
+    font: inherit; font-weight: 800; font-size: 16px; color: var(--muted);
+    background: none; border: 0; border-radius: 999px; min-height: 44px; cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] { background: var(--grad); color: #fff; }
+
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: ""; position: absolute; right: 20px; top: 50%; width: 10px; height: 10px;
+    border-right: 3px solid var(--pink-deep); border-bottom: 3px solid var(--pink-deep);
+    transform: translateY(-70%) rotate(45deg); pointer-events: none;
+  }
+  select {
+    width: 100%; appearance: none; -webkit-appearance: none;
+    font: inherit; font-weight: 700; font-size: 16px; color: var(--text);
+    background: var(--chip); border: 2px solid var(--line); border-radius: 999px;
+    padding: 0 44px 0 18px; min-height: 52px;
+  }
+
+  .btn {
+    display: block; width: 100%; font: inherit; font-weight: 900; font-size: 20px; color: #fff;
+    background: var(--grad); border: 0; border-radius: 999px; min-height: 60px; margin-top: 22px;
+    box-shadow: 0 8px 20px rgba(232, 87, 138, .35); cursor: pointer;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn:disabled { opacity: .5; }
+  .btn.ghost { background: var(--card); color: var(--pink-deep); border: 2px solid var(--pink); box-shadow: none; font-size: 17px; min-height: 52px; }
+
+  #results { margin-top: 22px; }
+  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .song a {
+    display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit;
+    background: var(--card); border-radius: 18px; padding: 12px 14px; box-shadow: var(--shadow); min-height: 64px;
+  }
+  .num {
+    flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--grad);
+    color: #fff; font-weight: 900; display: grid; place-items: center; font-size: 15px;
+  }
+  .meta { min-width: 0; flex: 1; }
+  .title { font-weight: 800; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .artist { color: var(--muted); font-weight: 600; font-size: 14px; }
+  .go { color: var(--pink-deep); font-weight: 900; font-size: 13px; flex: none; }
+
+  .empty { text-align: center; padding: 26px 18px; }
+  .empty .big { font-size: 22px; font-weight: 900; margin: 6px 0 4px; }
+  .empty p { color: var(--muted); margin: 0; font-weight: 600; }
+  .empty p.big { color: var(--text); font-weight: 900; }
+  .hint { color: var(--muted); font-size: 13px; text-align: center; margin: 12px 0 0; font-weight: 600; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Что споём?</h1>
+  <p class="sub">Три вопроса — и песня найдётся</p>
+
+  <section class="card">
+    <div class="field">
+      <p class="label">Настроение</p>
+      <div class="chips" id="mood" role="group" aria-label="Настроение"></div>
+    </div>
+    <div class="field">
+      <p class="label">Язык</p>
+      <div class="seg" id="lang" role="group" aria-label="Язык">
+        <button type="button" data-v="en" aria-pressed="false">Английский</button>
+        <button type="button" data-v="ru" aria-pressed="true">Русский</button>
+      </div>
+    </div>
+    <div class="field">
+      <p class="label"><label for="style">Стиль</label></p>
+      <div class="select-wrap">
+        <select id="style"></select>
+      </div>
+    </div>
+    <button class="btn" id="find" type="button">Найти</button>
+  </section>
+
+  <section id="results" aria-live="polite"></section>
+</main>
+
+<script>
+const MOODS = ["романтическое","лирическое","весёлое","энергичное","грустное","ностальгическое","дерзкое"];
+const STYLES = ["поп","рок","джаз","фолк","шансон","хип-хоп/рэп","диско/ретро","кантри","эстрада"];
+const PAGE = 10;
+
+// Списки песен собирает GitHub Actions из Last.fm (scripts/fetch-songs.mjs) и кладёт в data/
+const cache = {};
+async function loadLang(lang) {
+  if (!cache[lang]) {
+    cache[lang] = fetch(`data/${lang}.json`, { cache: "no-cache" })
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .catch(e => { delete cache[lang]; throw e; });
+  }
+  return cache[lang];
+}
+
+const state = { mood: "весёлое", lang: "ru", style: "поп", list: [], shown: 0 };
+
+const moodEl = document.getElementById("mood");
+MOODS.forEach(m => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "chip"; b.textContent = m;
+  b.setAttribute("aria-pressed", m === state.mood);
+  b.onclick = () => { state.mood = m; [...moodEl.children].forEach(c => c.setAttribute("aria-pressed", c === b)); };
+  moodEl.append(b);
+});
+
+const langEl = document.getElementById("lang");
+langEl.querySelectorAll("button").forEach(b => b.onclick = () => {
+  state.lang = b.dataset.v;
+  langEl.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+});
+
+const styleEl = document.getElementById("style");
+STYLES.forEach(s => styleEl.add(new Option(s, s, s === state.style, s === state.style)));
+styleEl.onchange = () => state.style = styleEl.value;
+
+const res = document.getElementById("results");
+
+async function search(ignoreStyle) {
+  const data = await loadLang(state.lang);
+  const byStyle = data.moods[state.mood] || {};
+  return byStyle[ignoreStyle ? "_any" : state.style] || [];
+}
+
+function showError() {
+  res.innerHTML = `
+    <div class="card empty">
+      <div style="font-size:40px">🎶</div>
+      <p class="big">Списки песен пока не готовы</p>
+      <p>Проверь интернет или загляни чуть позже</p>
+    </div>`;
+}
+
+function lyricsUrl(artist, title) {
+  return "https://genius.com/search?q=" + encodeURIComponent(artist + " " + title);
+}
+
+function render() {
+  res.innerHTML = "";
+  if (!state.list.length) {
+    res.innerHTML = `
+      <div class="card empty">
+        <div style="font-size:40px">🎤</div>
+        <p class="big">Упси-дупси, попробуй другой запрос</p>
+        <p>По такому сочетанию песен не нашлось</p>
+        <button class="btn ghost" id="nostyle" type="button">Показать без учёта стиля</button>
+      </div>`;
+    document.getElementById("nostyle").onclick = () => run(true);
+    return;
+  }
+  const ul = document.createElement("ul");
+  ul.className = "list";
+  state.list.slice(0, state.shown).forEach(([artist, title], i) => {
+    const li = document.createElement("li");
+    li.className = "song";
+    li.innerHTML = `<a target="_blank" rel="noopener">
+      <span class="num">${i + 1}</span>
+      <span class="meta"><div class="title"></div><div class="artist"></div></span>
+      <span class="go">текст ›</span></a>`;
+    li.querySelector("a").href = lyricsUrl(artist, title);
+    li.querySelector(".title").textContent = title;
+    li.querySelector(".artist").textContent = artist;
+    ul.append(li);
+  });
+  res.append(ul);
+  if (state.shown < state.list.length) {
+    const more = document.createElement("button");
+    more.className = "btn ghost"; more.type = "button"; more.textContent = "Ещё";
+    more.onclick = () => { state.shown += PAGE; render(); };
+    res.append(more);
+  } else {
+    const p = document.createElement("p");
+    p.className = "hint"; p.textContent = "Это все песни по запросу";
+    res.append(p);
+  }
+}
+
+async function run(ignoreStyle) {
+  const btn = document.getElementById("find");
+  btn.disabled = true;
+  try {
+    state.list = await search(ignoreStyle);
+    state.shown = PAGE;
+    render();
+  } catch (e) {
+    showError();
+  } finally {
+    btn.disabled = false;
+  }
+  res.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+document.getElementById("find").onclick = () => run(false);
+</script>
+</body>
+</html>

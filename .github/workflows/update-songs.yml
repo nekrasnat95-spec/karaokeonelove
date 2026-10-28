@@ -2,8 +2,10 @@ name: Обновить списки песен
 
 on:
   workflow_dispatch: # кнопка «Run workflow» во вкладке Actions
-  schedule:
-    - cron: "17 3 * * 1" # каждый понедельник ночью
+  # Автозапуск по понедельникам выключен, пока песни задаём вручную.
+  # Чтобы включить, убери решётки:
+  # schedule:
+  #   - cron: "17 3 * * 1"
 
 permissions:
   contents: write
